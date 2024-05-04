@@ -82,7 +82,7 @@ namespace Order.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var orders = await _dbContext.Orders.Include(items => items.Items).ToListAsync();
+            var orders = await _dbContext.Orders.ToListAsync();
             return Ok(orders);
         }
     }

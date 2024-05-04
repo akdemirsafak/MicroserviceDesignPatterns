@@ -9,5 +9,11 @@ namespace Order.API.Models
         }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Order>().Navigation(x => x.Items).AutoInclude();
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

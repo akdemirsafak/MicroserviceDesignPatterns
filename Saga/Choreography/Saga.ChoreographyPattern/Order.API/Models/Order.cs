@@ -6,13 +6,13 @@ namespace Order.API.Models
         public string BuyerId { get; set; }
         public DateTime CreatedDate { get; set; }
         public OrderStatus Status { get; set; }
-        public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
+        public virtual ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
         public Address Address { get; set; }
 
         public string? FailMessage { get; set; }
     }
     public enum OrderStatus
     {
-        Suspend, Success, Fail
+        Suspend, Completed, Fail
     }
 }

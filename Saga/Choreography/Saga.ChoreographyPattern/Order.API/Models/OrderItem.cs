@@ -12,6 +12,6 @@ namespace Order.API.Models
         public int OrderId { get; set; }
 
         // Navigation properties
-        public Order Order { get; set; }
+        //public Order Order { get; set; }
     }
 }
