@@ -22,7 +22,7 @@ namespace Payment.API.Consumers
             {
                 _logger.LogInformation($"{context.Message.Payment.TotalPrice} TL was withdrawn from credit card for user id= {context.Message.BuyerId}");
                 //Ödeme işlemleri başarılı olduğunda PaymentSucceededEvent'i publish ediyoruz.
-                await _publishEndpoint.Publish<PaymentSucceededEvent>(new
+                await _publishEndpoint.Publish<PaymentCompletedEvent>(new
                 {
                     context.Message.OrderId,
                     context.Message.BuyerId
