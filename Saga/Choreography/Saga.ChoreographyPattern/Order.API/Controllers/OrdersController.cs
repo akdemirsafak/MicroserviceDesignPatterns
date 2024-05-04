@@ -58,9 +58,10 @@ namespace Order.API.Controllers
                     CardName = createOrderDTO.Payment.CardName,
                     CardNumber = createOrderDTO.Payment.CardNumber,
                     Expiration = createOrderDTO.Payment.Expiration,
-                    CVV = createOrderDTO.Payment.CVV
+                    CVV = createOrderDTO.Payment.CVV,
+                    TotalPrice = newOrder.Items.Sum(x => x.Count * x.Price)
                 },
-                TotalPrice = newOrder.Items.Sum(x => x.Count * x.Price),
+                //TotalPrice = newOrder.Items.Sum(x => x.Count * x.Price),
                 OrderItems = newOrder.Items.Select(x => new OrderItemMessage
                 {
                     ProductId = x.ProductId,

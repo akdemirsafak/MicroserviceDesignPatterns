@@ -63,12 +63,15 @@ namespace Stock.API.Consumers
                 await sendEndpoint.Send(stockReservedEvent);
 
             }
-            await _publishEndpoint.Publish(new StockNotReservedEvent()
-            {
-                OrderId = context.Message.OrderId,
-                Message = "Stock is not enough"
-            });
-            _logger.LogInformation($"Stock wasnt reserved.Stock is enough.");
+            else
+            { 
+                await _publishEndpoint.Publish(new StockNotReservedEvent()
+                {
+                    OrderId = context.Message.OrderId,
+                    Message = "Stock is not enough"
+                });
+                _logger.LogInformation($"Stock wasnt reserved.Stock is enough.");
+            }
         }
     }
 }
