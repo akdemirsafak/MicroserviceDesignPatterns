@@ -1,3 +1,7 @@
+using MassTransit;
+using Payment.API.Consumers;
+using SharedLib;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +10,19 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+
+builder.Services.AddMassTransit(opt=> {
+    opt.AddConsumer<StockReservedEventConsumer>();
+    opt.UsingRabbitMq((ctx, cfg) => {
+        cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ"));
+        cfg.ReceiveEndpoint(RabbitMQSettingsConst.StockReservedEventQueueName, e => 
+        {
+            e.ConfigureConsumer<StockReservedEventConsumer>(ctx);
+        });
+    });
+});
 
 var app = builder.Build();
 
