@@ -36,6 +36,7 @@ namespace Payment.API.Consumers
                 {
                     context.Message.OrderId,
                     context.Message.BuyerId,
+                    context.Message.OrderItems,
                     Message = "Insufficient balance"
                 });
             }
