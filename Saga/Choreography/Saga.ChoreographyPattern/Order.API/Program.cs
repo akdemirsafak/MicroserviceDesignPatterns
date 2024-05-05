@@ -20,6 +20,7 @@ builder.Services.AddMassTransit(x =>
 {   
     x.AddConsumer<PaymentCompletedEventConsumer>();
     x.AddConsumer<PaymentFailedEventConsumer>();
+    x.AddConsumer<StockNotReservedEventConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ")); //cloudamqp kullandık Rabbitmq cloud
@@ -32,6 +33,12 @@ builder.Services.AddMassTransit(x =>
         {
             e.ConfigureConsumer<PaymentFailedEventConsumer>(context);
         });
+
+        cfg.ReceiveEndpoint(RabbitMQSettingsConst.StockNotReservedEventQueueName, e =>
+        {
+            e.ConfigureConsumer<StockNotReservedEventConsumer>(context);
+        });
+
     });
 });
 
