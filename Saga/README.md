@@ -37,3 +37,4 @@ Dış dünyaya açık değildir.Kendi içlerinde işler yaparlar.Console uygulam
 Normal bir uygulama gibi up olur fakat mvc ya da api tarafında endpoint'i yoktur.
 
 
+##### Kuyruğu tek bir servis(State Machine) dinlediği için Send methodunu kullanacağız.Event'i tek bir servis dinliyorsa Send ederiz.

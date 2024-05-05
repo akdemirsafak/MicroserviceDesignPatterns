@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Order.API.DTOs;
 using Order.API.Models;
 using SharedLib;
+using SharedLib.Events;
+using SharedLib.Interfaces;
 
 namespace Order.API.Controllers
 {
@@ -12,13 +14,14 @@ namespace Order.API.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
-        private readonly IPublishEndpoint _publishEndpoint;
+        private readonly ISendEndpointProvider _sendEndpointProvider;
 
         public OrdersController(AppDbContext dbContext,
-        IPublishEndpoint publishEndpoint)
+
+        ISendEndpointProvider sendEndpointProvider)
         {
             _dbContext = dbContext;
-            _publishEndpoint = publishEndpoint;
+            _sendEndpointProvider = sendEndpointProvider;
         }
 
         [HttpPost]
@@ -49,7 +52,8 @@ namespace Order.API.Controllers
             await _dbContext.Orders.AddAsync(newOrder);
             await _dbContext.SaveChangesAsync();
 
-            var orderCreatedEvent = new OrderCreatedEvent
+            #region 
+            var orderCreatedEvent = new OrderCreatedRequestEvent
             {
                 OrderId = newOrder.Id,
                 BuyerId = newOrder.BuyerId,
@@ -67,15 +71,13 @@ namespace Order.API.Controllers
                     Count = x.Count
                 }).ToList()
             };
-            await _publishEndpoint.Publish(orderCreatedEvent); //Exchange'e gittiği için bir queue adı vermedik.
-            // Publish ve Send farkı :
-            // Publish'de eğer bu mesajı subscribe eden yoksa mesaj boşa gider. Publish'de Kimlerin bu mesajı dinlediğini bilmezsiniz. Send'de ise bu message kaydedilir.
-            // Publish ile rabbitMq'ya gönderilen event Exchange'e gider. Direkt olarak queue'ya gitmez.
-            // Exchange'e gittiğinde bu mesajı dinleyen queue yoksa boşa gider. Kalıcı hale gelmez.!
-            // Send'de ise direkt olarak queue'ya gider. Eğer queue yoksa oluşturulur.
-            // Publish ile gönderilen mesajlara herhangi bir servis subscribe olabilir fakat Send ile gönderdiğimiz eventler direkt queue'ya gittiği için sadece o kuyruğu dinleyenler alır.
-            // Gönderdiğimiz mesajı genelde sadece 1 servis dinleyecekse Send kullanırız.
-            // Örneğin ödeme adımında genelde send kullanılır çünkü ödemeyi sadece 1 servis gerçekleştirir.
+            #endregion
+
+
+            var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{RabbitMQSettingsConst.OrderSaga}"));
+            //Eğer event'i publish edersek o anda State Machine down ise mesajlar boşa gider.Send ile gönderirsek direkt queue'ya yazılır.
+
+            await sendEndpoint.Send<IOrderCreatedRequestEvent>(orderCreatedEvent);
 
             return Ok();
         }
