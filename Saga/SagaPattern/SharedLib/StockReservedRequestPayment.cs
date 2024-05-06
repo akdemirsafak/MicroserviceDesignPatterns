@@ -8,9 +8,10 @@ namespace SharedLib
         {
             CorrelationId = correllationId;
         }
-        public PaymentMessage Payment { get ; set ; }
-        public List<OrderItemMessage> OrderItems { get ; set ; }
+        public PaymentMessage Payment { get; set; }
+        public List<OrderItemMessage> OrderItems { get; set; }
+        public string BuyerId { get; set; }
 
-        public Guid CorrelationId { get ;}
+        public Guid CorrelationId { get; }
     }
 }

@@ -1,10 +1,16 @@
-﻿namespace SharedLib
+﻿using SharedLib.Interfaces;
+
+namespace SharedLib
 {
-    public class PaymentFailedEvent
+    public class PaymentFailedEvent : IPaymentFailedEvent
     {
-        public int OrderId { get; set; }
+        public PaymentFailedEvent(Guid correlationId)
+        {
+            CorrelationId = correlationId;
+        }
+        public string Reason { get; set; }
         public List<OrderItemMessage> OrderItems { get; set; }
-        public string BuyerId { get; set; }
-        public string Message { get; set; }
+
+        public Guid CorrelationId { get; }
     }
 }

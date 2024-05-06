@@ -1,8 +1,13 @@
-﻿namespace SharedLib
+﻿using SharedLib.Interfaces;
+
+namespace SharedLib
 {
-    public class PaymentCompletedEvent
+    public class PaymentCompletedEvent : IPaymentCompletedEvent
     {
-        public int OrderId { get; set; }
-        public string BuyerId { get; set; } // OrderId'den satın alan kullanıcıyı görüntüleyebiliriz.Fakat başka microservisler de bu eventi dinleyebiliyor olabilir. Bu yüzden BuyerId'yi de gönderiyoruz.
+        public PaymentCompletedEvent(Guid correlationId)
+        {
+            CorrelationId = correlationId;
+        }
+        public Guid CorrelationId { get; }
     }
 }

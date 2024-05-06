@@ -33,20 +33,20 @@ namespace SagaStateMachineWorkerService.Models
                         context.Instance.CreatedDate = DateTime.Now;
                     })
                     .Then(context => Console.WriteLine($"Order Created Request Event Before: {context.Instance}"))
-                    .Publish(context => new OrderCreatedEvent(context.Instance.CorrelationId) { OrderItems=context.Data.OrderItems}) //Stock microservice' i bu eventi dinliyor.
-                    //Bir event fırlattığımızda event state machine'a state güncellemek için döndüğünde bu event hangi satırla(instance) ilgili olduğunu tespit etmesi için corellationId kullanırız.
+                    .Publish(context => new OrderCreatedEvent(context.Instance.CorrelationId) { OrderItems = context.Data.OrderItems }) //Stock microservice' i bu eventi dinliyor.
+                                                                                                                                        //Bir event fırlattığımızda event state machine'a state güncellemek için döndüğünde bu event hangi satırla(instance) ilgili olduğunu tespit etmesi için corellationId kullanırız.
                     .TransitionTo(OrderCreated)//Transition ile yukarıdaki işlemlerden(request geldi şuan state initial) sonra OrderCreated state'ine geçiş yap.
                     .Then(context =>
                     {
                         Console.WriteLine($"Order Created Request Event After: {context.Instance}");
                     })
-                 );
-        
+                );
+
             //---------------------------------------
             During(OrderCreated, //OrderCreatedSate'indeyken StockReservedEvent geldiğinde yapılacakları belirtiyoruz.
                 When(StockReservedEvent)
                     .TransitionTo(StockReserved)
-                    .Send(new Uri($"queue:{RabbitMQSettingsConst.StockReservedRequestPaymentQueueName}"), 
+                    .Send(new Uri($"queue:{RabbitMQSettingsConst.PaymentStockReservedRequestQueueName}"),
                         context => new StockReservedRequestPayment(context.Instance.CorrelationId)
                         {
                             Payment = new PaymentMessage
@@ -57,7 +57,8 @@ namespace SagaStateMachineWorkerService.Models
                                 Expiration = context.Instance.Expiration,
                                 TotalPrice = context.Instance.TotalPrice
                             },
-                            OrderItems = context.Data.OrderItems
+                            OrderItems = context.Data.OrderItems,
+                            BuyerId = context.Instance.BuyerId
                         })
                     .Then(context =>
                     {
