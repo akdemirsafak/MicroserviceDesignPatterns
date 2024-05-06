@@ -7,7 +7,9 @@ namespace SagaStateMachineWorkerService.Models
     public class OrderStateMachine : MassTransitStateMachine<OrderStateInstance>
     {
         public Event<IOrderCreatedRequestEvent> OrderCreatedRequestEvent { get; set; } //Bu event geldiğinde State'ini OrderCreated Olarak değiştireceğiz.
+        public Event<IStockReservedEvent> StockReservedEvent { get; set; }
         public State OrderCreated { get; private set; } //Bu class dışında set edilmeyecek.
+        public State StockReserved { get; private set; }
         public OrderStateMachine()
         {
             InstanceState(x => x.CurrentState);
@@ -39,6 +41,29 @@ namespace SagaStateMachineWorkerService.Models
                         Console.WriteLine($"Order Created Request Event After: {context.Instance}");
                     })
                  );
+        
+            //---------------------------------------
+            During(OrderCreated, //OrderCreatedSate'indeyken StockReservedEvent geldiğinde yapılacakları belirtiyoruz.
+                When(StockReservedEvent)
+                    .TransitionTo(StockReserved)
+                    .Send(new Uri($"queue:{RabbitMQSettingsConst.StockReservedRequestPaymentQueueName}"), 
+                        context => new StockReservedRequestPayment(context.Instance.CorrelationId)
+                        {
+                            Payment = new PaymentMessage
+                            {
+                                CardName = context.Instance.CardName,
+                                CardNumber = context.Instance.CardNumber,
+                                CVV = context.Instance.CVV,
+                                Expiration = context.Instance.Expiration,
+                                TotalPrice = context.Instance.TotalPrice
+                            },
+                            OrderItems = context.Data.OrderItems
+                        })
+                    .Then(context =>
+                    {
+                        Console.WriteLine($"Stock Reserved Event After: {context.Instance}");
+                    })
+                );
         }
     }
 }
