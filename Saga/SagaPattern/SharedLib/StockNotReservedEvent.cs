@@ -1,8 +1,15 @@
+using SharedLib.Interfaces;
+
 namespace SharedLib
 {
-    public class StockNotReservedEvent
+    public class StockNotReservedEvent : IStockNotReservedEvent
     {
-        public int OrderId { get; set; }
-        public string Message { get; set; }
+        public StockNotReservedEvent(Guid correllationId)
+        {
+            CorrelationId = correllationId;
+        }
+        public string Reason { get; set; }
+
+        public Guid CorrelationId { get; }
     }
 }

@@ -1,4 +1,5 @@
 using MassTransit;
+using SharedLib;
 using SharedLib.Interfaces;
 
 namespace SagaStateMachineWorkerService.Models
@@ -30,11 +31,14 @@ namespace SagaStateMachineWorkerService.Models
                         context.Instance.CreatedDate = DateTime.Now;
                     })
                     .Then(context => Console.WriteLine($"Order Created Request Event Before: {context.Instance}"))
+                    .Publish(context => new OrderCreatedEvent(context.Instance.CorrelationId) { OrderItems=context.Data.OrderItems}) //Stock microservice' i bu eventi dinliyor.
+                    //Bir event fırlattığımızda event state machine'a state güncellemek için döndüğünde bu event hangi satırla(instance) ilgili olduğunu tespit etmesi için corellationId kullanırız.
                     .TransitionTo(OrderCreated)//Transition ile yukarıdaki işlemlerden(request geldi şuan state initial) sonra OrderCreated state'ine geçiş yap.
                     .Then(context =>
                     {
                         Console.WriteLine($"Order Created Request Event After: {context.Instance}");
-                    }));
+                    })
+                 );
         }
     }
 }

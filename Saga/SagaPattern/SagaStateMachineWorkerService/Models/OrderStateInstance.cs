@@ -30,7 +30,7 @@ namespace SagaStateMachineWorkerService.Models
             foreach (var property in properties)
             {
                 var value = property.GetValue(this, null); //index null
-                stringBuilder.Append($"{property.Name} : {value}");
+                stringBuilder.AppendLine($"{property.Name} : {value}");
             }
             stringBuilder.Append("--------------");
             return stringBuilder.ToString();

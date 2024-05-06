@@ -1,12 +1,17 @@
+using SharedLib.Interfaces;
+
 namespace SharedLib
 {
-    public class OrderCreatedEvent
+    public class OrderCreatedEvent : IOrderCreatedEvent
     {
-        public int OrderId { get; set; }
-        public string BuyerId { get; set; }
-
-        public PaymentMessage Payment { get; set; }
+        public OrderCreatedEvent(Guid correlationId)
+        {
+            CorrelationId = correlationId;
+        }
+        //Buradan OrderId, BuyerId, Payment gibi bilgileri kaldırmamızın sebebi bu bilgilerin Initial aşamasında requestten alınıp State Machine'de tutuluyor olması.
         public List<OrderItemMessage> OrderItems { get; set; } = new();
 
+        public Guid CorrelationId { get; }
+      
     }
 }
