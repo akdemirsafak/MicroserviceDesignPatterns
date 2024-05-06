@@ -29,10 +29,12 @@ namespace SagaStateMachineWorkerService.Models
                         context.Instance.Expiration = context.Data.Payment.Expiration;
                         context.Instance.CreatedDate = DateTime.Now;
                     })
-                    .Then(context => Console.WriteLine($"Order Created Event Received: {context.Instance.OrderId}"))
-                    .TransitionTo(OrderCreated))//Transition ile yukarıdaki işlemlerden(request geldi şuan state initial) sonra OrderCreated state'ine geçiş yap.
-                    .Then(context => Console.WriteLine($"Order Created State after: {context.Instance.OrderId}");
-
+                    .Then(context => Console.WriteLine($"Order Created Request Event Before: {context.Instance}"))
+                    .TransitionTo(OrderCreated)//Transition ile yukarıdaki işlemlerden(request geldi şuan state initial) sonra OrderCreated state'ine geçiş yap.
+                    .Then(context =>
+                    {
+                        Console.WriteLine($"Order Created Request Event After: {context.Instance}");
+                    }));
         }
     }
 }

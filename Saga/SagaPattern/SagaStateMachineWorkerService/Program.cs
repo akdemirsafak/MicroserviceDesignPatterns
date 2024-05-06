@@ -6,7 +6,6 @@ using SharedLib;
 using System.Reflection;
 
 var builder = Host.CreateApplicationBuilder(args);
-builder.Services.AddHostedService<Worker>();
 
 builder.Services.AddMassTransit(cfg =>
 {
@@ -31,6 +30,7 @@ builder.Services.AddMassTransit(cfg =>
 
     }));
 });
+builder.Services.AddHostedService<Worker>();
 
 
 
