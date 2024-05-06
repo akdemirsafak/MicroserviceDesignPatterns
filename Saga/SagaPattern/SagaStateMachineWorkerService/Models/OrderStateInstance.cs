@@ -1,5 +1,5 @@
-using System.Text;
 using MassTransit;
+using System.Text;
 
 namespace SagaStateMachineWorkerService.Models
 {
