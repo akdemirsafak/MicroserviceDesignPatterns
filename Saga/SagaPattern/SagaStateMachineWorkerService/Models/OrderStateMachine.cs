@@ -1,5 +1,6 @@
 using MassTransit;
 using SharedLib;
+using SharedLib.Events;
 using SharedLib.Interfaces;
 
 namespace SagaStateMachineWorkerService.Models
@@ -8,8 +9,10 @@ namespace SagaStateMachineWorkerService.Models
     {
         public Event<IOrderCreatedRequestEvent> OrderCreatedRequestEvent { get; set; } //Bu event geldiğinde State'ini OrderCreated Olarak değiştireceğiz.
         public Event<IStockReservedEvent> StockReservedEvent { get; set; }
+        public Event<IPaymentCompletedEvent> PaymentCompletedEvent { get; set; }
         public State OrderCreated { get; private set; } //Bu class dışında set edilmeyecek.
         public State StockReserved { get; private set; }
+        public State PaymentCompleted { get; private set; }
         public OrderStateMachine()
         {
             InstanceState(x => x.CurrentState);
@@ -17,6 +20,9 @@ namespace SagaStateMachineWorkerService.Models
             y => y.CorrelateBy<int>(x => x.OrderId, z => z.Message.OrderId)
             .SelectId(context => Guid.NewGuid())); //Db'de orderId ile eventten gelen orderId yi karşılaştır varsa herhangi bir şey yapma yoksa yeni bir satır oluştur ve random guid corellationId oluştur.
 
+            Event(() => StockReservedEvent, x => x.CorrelateById(y => y.Message.CorrelationId)); //StockReservedEvent geldiğinde hangi satırın state'ini StockReserved yapacak.
+
+            Event(() => PaymentCompletedEvent, x => x.CorrelateById(y => y.Message.CorrelationId));
             //Initial state'den sonraki state'e geçerken yapılacakları belirtiyoruz.
             Initially(
                 When(OrderCreatedRequestEvent)
@@ -64,6 +70,21 @@ namespace SagaStateMachineWorkerService.Models
                     {
                         Console.WriteLine($"Stock Reserved Event After: {context.Instance}");
                     })
+                );
+
+            //------------------PaymentCompleted---------------------
+            During(StockReserved, //StockReservedState'indeyken PaymentCompletedEvent geldiğinde yapılacakları belirtiyoruz.
+                When(PaymentCompletedEvent)
+                    .TransitionTo(PaymentCompleted)
+                    .Publish(context => new OrderRequestCompletedEvent
+                    {
+                        OrderId = context.Instance.OrderId
+                    })
+                    .Then(context =>
+                    {
+                        Console.WriteLine($"Payment Completed Event After: {context.Instance}");
+                    })
+                    .Finalize()
                 );
         }
     }

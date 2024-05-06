@@ -1,6 +1,8 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Order.API.Consumers;
 using Order.API.Models;
+using SharedLib;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +18,16 @@ builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Conf
 
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<OrderRequestCompletedEventConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ")); //cloudamqp kullandık Rabbitmq cloud
+
+        cfg.ReceiveEndpoint(RabbitMQSettingsConst.OrderRequestCompletedEventQueueName, x =>
+        {
+            x.ConfigureConsumer<OrderRequestCompletedEventConsumer>(context);
+        });
+
     });
 });
 
