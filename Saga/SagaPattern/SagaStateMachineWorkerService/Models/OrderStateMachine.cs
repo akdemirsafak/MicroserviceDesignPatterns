@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using MassTransit;
 using SharedLib;
 using SharedLib.Events;
@@ -10,9 +11,12 @@ namespace SagaStateMachineWorkerService.Models
         public Event<IOrderCreatedRequestEvent> OrderCreatedRequestEvent { get; set; } //Bu event geldiğinde State'ini OrderCreated Olarak değiştireceğiz.
         public Event<IStockReservedEvent> StockReservedEvent { get; set; }
         public Event<IPaymentCompletedEvent> PaymentCompletedEvent { get; set; }
+        public Event<IStockNotReservedEvent> StockNotReservedEvent { get; set; }
         public State OrderCreated { get; private set; } //Bu class dışında set edilmeyecek.
         public State StockReserved { get; private set; }
         public State PaymentCompleted { get; private set; }
+        public State StockNotReserved { get; private set; }
+
         public OrderStateMachine()
         {
             InstanceState(x => x.CurrentState);
@@ -22,8 +26,13 @@ namespace SagaStateMachineWorkerService.Models
 
             Event(() => StockReservedEvent, x => x.CorrelateById(y => y.Message.CorrelationId)); //StockReservedEvent geldiğinde hangi satırın state'ini StockReserved yapacak.
 
+            Event(() => StockNotReservedEvent, x => x.CorrelateById(y => y.Message.CorrelationId));
+
             Event(() => PaymentCompletedEvent, x => x.CorrelateById(y => y.Message.CorrelationId));
             //Initial state'den sonraki state'e geçerken yapılacakları belirtiyoruz.
+
+
+
             Initially(
                 When(OrderCreatedRequestEvent)
                     .Then(context =>
@@ -69,6 +78,13 @@ namespace SagaStateMachineWorkerService.Models
                     .Then(context =>
                     {
                         Console.WriteLine($"Stock Reserved Event After: {context.Instance}");
+                    }), //Stock reserve edilemezse geçilecek kısım :
+                    When(StockNotReservedEvent)
+                    .TransitionTo(StockNotReserved)
+                    .Publish(context => new OrderRequestFailedEvent
+                    {
+                        OrderId = context.Instance.OrderId,
+                        Reason = "Stock Not Reserved."
                     })
                 );
 
