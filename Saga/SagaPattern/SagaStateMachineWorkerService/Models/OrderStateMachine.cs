@@ -3,6 +3,7 @@ using MassTransit;
 using SharedLib;
 using SharedLib.Events;
 using SharedLib.Interfaces;
+using SharedLib.Messages;
 
 namespace SagaStateMachineWorkerService.Models
 {
@@ -11,10 +12,12 @@ namespace SagaStateMachineWorkerService.Models
         public Event<IOrderCreatedRequestEvent> OrderCreatedRequestEvent { get; set; } //Bu event geldiğinde State'ini OrderCreated Olarak değiştireceğiz.
         public Event<IStockReservedEvent> StockReservedEvent { get; set; }
         public Event<IPaymentCompletedEvent> PaymentCompletedEvent { get; set; }
+        public Event<IPaymentFailedEvent> PaymentFailedEvent { get; set; }
         public Event<IStockNotReservedEvent> StockNotReservedEvent { get; set; }
         public State OrderCreated { get; private set; } //Bu class dışında set edilmeyecek.
         public State StockReserved { get; private set; }
         public State PaymentCompleted { get; private set; }
+        public State PaymentFailed { get; private set; }
         public State StockNotReserved { get; private set; }
 
         public OrderStateMachine()
@@ -29,8 +32,9 @@ namespace SagaStateMachineWorkerService.Models
             Event(() => StockNotReservedEvent, x => x.CorrelateById(y => y.Message.CorrelationId));
 
             Event(() => PaymentCompletedEvent, x => x.CorrelateById(y => y.Message.CorrelationId));
-            //Initial state'den sonraki state'e geçerken yapılacakları belirtiyoruz.
 
+            Event(() => PaymentFailedEvent, x => x.CorrelateById(y => y.Message.CorrelationId));
+            //Initial state'den sonraki state'e geçerken yapılacakları belirtiyoruz.
 
 
             Initially(
@@ -84,7 +88,7 @@ namespace SagaStateMachineWorkerService.Models
                     .Publish(context => new OrderRequestFailedEvent
                     {
                         OrderId = context.Instance.OrderId,
-                        Reason = "Stock Not Reserved."
+                        Reason = context.Data.Reason
                     })
                 );
 
@@ -100,8 +104,29 @@ namespace SagaStateMachineWorkerService.Models
                     {
                         Console.WriteLine($"Payment Completed Event After: {context.Instance}");
                     })
-                    .Finalize()
+                    .Finalize(),
+                
+                When(PaymentFailedEvent) //Ödeme yapılamazsa
+                .Publish(context => new OrderRequestFailedEvent
+                {
+                    OrderId = context.Instance.OrderId,
+                    Reason = context.Data.Reason
+                })
+                .Send(new Uri($"queue:{RabbitMQSettingsConst.StockRollBackMessageQueueName}"),
+                context=> new StockRollBackMessage
+                {
+                    OrderItems=context.Data.OrderItems
+                })
+                .TransitionTo(PaymentFailed) //eventler bitmiş olayları temsil eder Mesajlar ise yapılacak işleri.Rabbitmq ya yapılacak işle(compansable transaction)
+                  
+                    .Then(context =>
+                    {
+                        Console.WriteLine($"Payment Failed Event After: {context.Instance}");
+                    })
                 );
+        
+        
+            SetCompletedWhenFinalized(); //Tamamlananları saga repository'lerden silecek.
         }
     }
 }
