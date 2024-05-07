@@ -73,3 +73,11 @@ Bu yapı yoksa message broker kullanmamız gerekir ve ekstra efor gerektirir.
 1. Write Model
   DDD kullanılıyorsa, DDD içerisinde eventleri db ye yazma işlemi için en uygun senaryo aggregate'ler içerisinde yapılmasıdır.
 2. Read model: Query'lerin nasıl ele alınacağı ile ilgilidir.
+
+<strong> SSL bağlantısına ihtiyacımız olacak ve bu adreste açıklaması var.
+https://developers.eventstore.com/server/v5/#getting-started 
+https://developers.eventstore.com/server/v5/security.html#setting-up-ssl-for-docker</strong>
+
+localhost:2113
+-- Default user : admin 
+-- Default password : changeit
