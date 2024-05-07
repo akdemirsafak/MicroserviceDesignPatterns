@@ -1,6 +1,6 @@
 ﻿using SharedLib.Interfaces;
 
-namespace SharedLib
+namespace SharedLib.Events
 {
     public class StockReservedRequestPayment : IStockReservedRequestPayment
     {

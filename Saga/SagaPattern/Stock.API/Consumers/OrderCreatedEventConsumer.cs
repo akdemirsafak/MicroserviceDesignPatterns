@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using SharedLib;
+using SharedLib.Events;
 using SharedLib.Interfaces;
 using Stock.API.DbContexts;
 

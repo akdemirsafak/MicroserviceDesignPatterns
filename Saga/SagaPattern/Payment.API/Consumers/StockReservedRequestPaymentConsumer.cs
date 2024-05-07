@@ -1,5 +1,5 @@
 using MassTransit;
-using SharedLib;
+using SharedLib.Events;
 using SharedLib.Interfaces;
 
 namespace Payment.API.Consumers
