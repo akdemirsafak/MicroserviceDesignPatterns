@@ -11,7 +11,7 @@ namespace EventSourcing.API.EventStores
         {
         }
 
-        public async Task AddProductAsync(CreateProductDto productDto)
+        public async Task CreatedAsync(CreateProductDto productDto)
         {
             Events.AddLast(new ProductCreatedEvent()
             {
