@@ -81,3 +81,6 @@ https://developers.eventstore.com/server/v5/security.html#setting-up-ssl-for-doc
 localhost:2113
 -- Default user : admin 
 -- Default password : changeit
+
+Db hazırlandıktan sonra Eventleri planlamak tamamıyla bizim tercihlerimize bağlıdır.
+ReadDb'de bir sıkıntı çıktığında ya da kaybolduğunda -gerektiğinde- eventstore'dan replay yapabilmemiz için id alanını kendimiz belirliyoruz.
