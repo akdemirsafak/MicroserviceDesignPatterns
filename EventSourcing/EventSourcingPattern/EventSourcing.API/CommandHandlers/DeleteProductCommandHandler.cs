@@ -15,7 +15,7 @@ namespace EventSourcing.API.CommandHandlers
 
         public async Task<Unit> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            _productStream.Deleted(request.Id);
+            _productStream.Deleted(request.id);
             await _productStream.SaveAsync();
             return Unit.Value;
         }

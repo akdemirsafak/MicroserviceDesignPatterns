@@ -3,8 +3,5 @@ using MediatR;
 
 namespace EventSourcing.API.Commands
 {
-    public class DeleteProductCommand : IRequest
-    {
-        public Guid Id { get; set; }
-    }
+    public record DeleteProductCommand(Guid id) : IRequest;
 }

@@ -1,4 +1,7 @@
+using System.Reflection;
+using EventSourcing.API.Commands;
 using EventSourcing.API.EventStores;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +12,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddEventStore(builder.Configuration);
+
+builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+//builder.Services.AddMediatR(typeof(CreateProductCommand).Assembly);
+//builder.Services.AddMediatR(typeof(Program).Assembly);
+
+builder.Services.AddEventStore(builder.Configuration); //panel : http://localhost:2113/
 builder.Services.AddSingleton<ProductStream>();
 
 var app = builder.Build();
