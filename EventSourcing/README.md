@@ -100,3 +100,9 @@ Hangi eventte kaldığımızı eventstore takip eder.Bağlantı koptuğunda veya
 Subscribe olayını gerçekleştirmek için Panelden(localhost:2113) Persistent Subscriptions içerisine yeni bir subscrition oluştururuz.
 Group => Birden fazla client aynı subscribe'da gruplandırırsa EventStore MessageBroker gibi çalışır.Eventleri sırayla yollar.
 Min CheckPoint Count => Örneğin 10 olarak belirlediğimizde Dashboard 10 event gönderildikten sonra güncellenir.
+
+
+
+### Replay
+1. Panelden Yeni bir subscription oluşturulur.(Aynı adla grubu başka)
+2. ProductStream.cs içerisinde grup adını yeni adla güncelleyip projeyi run ettiğimizde dataları Read db ye ekleyecektir.
