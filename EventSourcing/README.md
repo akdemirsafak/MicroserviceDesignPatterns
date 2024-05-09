@@ -84,3 +84,19 @@ localhost:2113
 
 Db hazırlandıktan sonra Eventleri planlamak tamamıyla bizim tercihlerimize bağlıdır.
 ReadDb'de bir sıkıntı çıktığında ya da kaybolduğunda -gerektiğinde- eventstore'dan replay yapabilmemiz için id alanını kendimiz belirliyoruz.
+
+## Subscribe Türleri
+
+### Volatile Subscriptions
+ Product stream'de 100 event olduğunu varsayalım.Bu subscription yöntemi ile 100. den sonra gelen eventleri dinlemiş oluruz.
+ Subscribe olduğumuzda hangi eventleri dinleyeceğimizi kendimiz seçmemiz gerekir.Bir bağlantı kopukluğunda aradaki eventler kayıp olur.
+
+### Catch up Subscriptions
+ Herhangi bir stream'e subscribe olduğumuzda en baştan dinliyoruz, bağlantı kopukluğunda tekrar 0 dan dinlemeye başlar.Dinleyen olarak ayrıca başka bir yere hangi eventi dinlediğimizi de kaydetmemiz gerekir. 
+
+### Persistance Subscription
+Hangi eventte kaldığımızı eventstore takip eder.Bağlantı koptuğunda veya process çöktüğünde tekrar bağlandığımızda eventstore hangi eventte kaldıysa ordan devam eder.
+
+Subscribe olayını gerçekleştirmek için Panelden(localhost:2113) Persistent Subscriptions içerisine yeni bir subscrition oluştururuz.
+Group => Birden fazla client aynı subscribe'da gruplandırırsa EventStore MessageBroker gibi çalışır.Eventleri sırayla yollar.
+Min CheckPoint Count => Örneğin 10 olarak belirlediğimizde Dashboard 10 event gönderildikten sonra güncellenir.

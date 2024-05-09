@@ -1,4 +1,5 @@
 using System.Reflection;
+using EventSourcing.API.BackgroundServices;
 using EventSourcing.API.Commands;
 using EventSourcing.API.DbContexts;
 using EventSourcing.API.EventStores;
@@ -24,6 +25,9 @@ builder.Services.AddSingleton<ProductStream>();
 
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+builder.Services.AddHostedService<ProductReadModelEventStore>();
 
 var app = builder.Build();
 
