@@ -1,5 +1,6 @@
 using EventSourcing.API.Commands;
 using EventSourcing.API.DTOs;
+using EventSourcing.API.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,12 @@ namespace EventSourcing.API.Controllers
         public ProductController(IMediator mediatr)
         {
             _mediatr = mediatr;
+        }
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetProductsByUserId(int userId)
+        {
+            var products = await _mediatr.Send(new GetProductsByUserIdQuery(userId));
+            return Ok(products);
         }
 
         [HttpPost]

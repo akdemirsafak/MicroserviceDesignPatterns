@@ -1,4 +1,3 @@
-
 using System.Text;
 using System.Text.Json;
 using EventSourcing.API.DbContexts;
@@ -49,8 +48,8 @@ namespace EventSourcing.API.BackgroundServices
         }
         private async Task EventAppeared(EventStorePersistentSubscriptionBase arg1, ResolvedEvent arg2)
         {
-            _logger.LogInformation("The message processing...");
             var type = Type.GetType($"{Encoding.UTF8.GetString(arg2.Event.Metadata)}, EventSourcing.Shared"); //Almak istediğimi tipler ayrı class'larda olduğu için EventSourcing.Shared diyerek özellikle belirttik.Aynı namespace altında olsaydı belirtmemize gerek kalmayacaktı.
+            _logger.LogInformation($"The message processing... : {type} ");
             var eventData = Encoding.UTF8.GetString(arg2.Event.Data);
             var @event = JsonSerializer.Deserialize(eventData, type); //event özel bir keyword olduğu için sıkıntı yaşatmamak açısından @ ile kullandık.
 
