@@ -22,7 +22,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<OrderCreatedEventConsumer>();
-    x.AddConsumer<PaymentFailedEventConsumer>();
+    x.AddConsumer<StockRollBackMessageConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ")); //cloudamqp kullandık Rabbitmq cloud
@@ -30,12 +30,12 @@ builder.Services.AddMassTransit(x =>
         {
             e.ConfigureConsumer<OrderCreatedEventConsumer>(context);
         });
-        cfg.ReceiveEndpoint(RabbitMQSettingsConst.StockPaymentFailedEventQueueName, e =>
+
+        cfg.ReceiveEndpoint(RabbitMQSettingsConst.StockRollBackMessageQueueName, e =>
         {
-            e.ConfigureConsumer<PaymentFailedEventConsumer>(context);
+            e.ConfigureConsumer<StockRollBackMessageConsumer>(context);
         });
     });
-
 });
 
 

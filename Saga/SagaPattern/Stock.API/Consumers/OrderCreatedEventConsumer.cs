@@ -1,34 +1,30 @@
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using SharedLib;
+using SharedLib.Events;
+using SharedLib.Interfaces;
 using Stock.API.DbContexts;
 
 namespace Stock.API.Consumers
 {
-    public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent> //OrderCreatedEvent'i dinleyecek ve bu event fırlatıldığında bu consumer yakalayacak.
+    public class OrderCreatedEventConsumer : IConsumer<IOrderCreatedEvent>
     {
+
         private readonly AppDbContext _dbContext;
         private readonly ILogger<OrderCreatedEventConsumer> _logger;
-        private readonly ISendEndpointProvider _sendEndpointProvider;
         private readonly IPublishEndpoint _publishEndpoint;
 
-        public OrderCreatedEventConsumer(AppDbContext dbContext,
-        ILogger<OrderCreatedEventConsumer> logger,
-        ISendEndpointProvider sendEndpointProvider,
-        IPublishEndpoint publishEndpoint)
+        public OrderCreatedEventConsumer(AppDbContext dbContext, 
+            ILogger<OrderCreatedEventConsumer> logger, 
+
+            IPublishEndpoint publishEndpoint)
         {
             _dbContext = dbContext;
             _logger = logger;
-            _sendEndpointProvider = sendEndpointProvider;
             _publishEndpoint = publishEndpoint;
         }
 
-        public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
+        public async Task Consume(ConsumeContext<IOrderCreatedEvent> context)
         {
-            //Eventimizi dinleyen tek servisimiz olduğu için Send methodunu kullanacağız ve queue adını vereceğiz.
-
-            //Tüm ürünler stokta varsa sipariş verilebilecek senaryosu üzerinden ilerliyoruz.
-
             var stockResult = new List<bool>();
             foreach (var item in context.Message.OrderItems)
             {
@@ -43,35 +39,27 @@ namespace Stock.API.Consumers
                     var stock = await _dbContext.Stocks.FirstOrDefaultAsync(x => x.ProductId == item.ProductId);
                     if (stock is not null)
                         stock.Count -= item.Count;
-
                     _dbContext.Stocks.Update(stock);
                 }
                 await _dbContext.SaveChangesAsync();
-                _logger.LogInformation($"Stock was reserved for BuyerId : {context.Message.BuyerId}");
-                var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{RabbitMQSettingsConst.StockReservedEventQueueName}"));
+                _logger.LogInformation($"Stock was reserved for CorellationId : {context.Message.CorrelationId}");
 
-                #region 
-                var stockReservedEvent = new StockReservedEvent()
+                var stockReservedEvent = new StockReservedEvent(context.Message.CorrelationId)
                 {
-                    OrderId = context.Message.OrderId,
-                    BuyerId = context.Message.BuyerId,
-                    Payment = context.Message.Payment,
                     OrderItems = context.Message.OrderItems
                 };
-                #endregion
 
-                await sendEndpoint.Send(stockReservedEvent);
-
+                await _publishEndpoint.Publish(stockReservedEvent);
             }
             else
-            { 
-                await _publishEndpoint.Publish(new StockNotReservedEvent()
+            {
+                await _publishEndpoint.Publish(new StockNotReservedEvent(context.Message.CorrelationId)
                 {
-                    OrderId = context.Message.OrderId,
-                    Message = "Stock is not enough"
+                    Reason = "Stock is not enough"
                 });
                 _logger.LogInformation($"Stock wasnt reserved.Stock is enough.");
             }
         }
     }
 }
+

@@ -17,26 +17,20 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddMassTransit(x =>
-{   
-    x.AddConsumer<PaymentCompletedEventConsumer>();
-    x.AddConsumer<PaymentFailedEventConsumer>();
-    x.AddConsumer<StockNotReservedEventConsumer>();
+{
+    x.AddConsumer<OrderRequestCompletedEventConsumer>();
+    x.AddConsumer<OrderRequestFailedEventConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ")); //cloudamqp kullandık Rabbitmq cloud
-        cfg.ReceiveEndpoint(RabbitMQSettingsConst.OrderPaymentCompletedEventQueueName, e =>
-        {
-            e.ConfigureConsumer<PaymentCompletedEventConsumer>(context);
 
-        });
-        cfg.ReceiveEndpoint(RabbitMQSettingsConst.OrderPaymentFailedEventQueueName, e =>
+        cfg.ReceiveEndpoint(RabbitMQSettingsConst.OrderRequestCompletedEventQueueName, x =>
         {
-            e.ConfigureConsumer<PaymentFailedEventConsumer>(context);
+            x.ConfigureConsumer<OrderRequestCompletedEventConsumer>(context);
         });
-
-        cfg.ReceiveEndpoint(RabbitMQSettingsConst.StockNotReservedEventQueueName, e =>
+        cfg.ReceiveEndpoint(RabbitMQSettingsConst.OrderRequestFailedEventQueueName, x =>
         {
-            e.ConfigureConsumer<StockNotReservedEventConsumer>(context);
+            x.ConfigureConsumer<OrderRequestFailedEventConsumer>(context);
         });
 
     });

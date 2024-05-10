@@ -31,3 +31,10 @@ Automatonymous, Masstransit in Orchenstration pattern'de kullandığı State Mac
 Automatonymous ile birlikte event state'lerini bir db de tutacağız.Azure table,cosmosdb,mongodb,redis farketmeksizin tutabiliriz.
 Bu kütüphaneyi kullandığımızda default olarak initial ve final state'ler gelir.
 
+### Worker services
+
+Dış dünyaya açık değildir.Kendi içlerinde işler yaparlar.Console uygulamasından daha fazla işlevi vardır.
+Normal bir uygulama gibi up olur fakat mvc ya da api tarafında endpoint'i yoktur.
+
+
+##### Kuyruğu tek bir servis(State Machine) dinlediği için Send methodunu kullanacağız.Event'i tek bir servis dinliyorsa Send ederiz.

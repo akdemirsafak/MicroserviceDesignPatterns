@@ -13,13 +13,15 @@ builder.Services.AddSwaggerGen();
 
 
 
-builder.Services.AddMassTransit(opt=> {
-    opt.AddConsumer<StockReservedEventConsumer>();
-    opt.UsingRabbitMq((ctx, cfg) => {
+builder.Services.AddMassTransit(opt =>
+{
+    opt.AddConsumer<StockReservedRequestPaymentConsumer>();
+    opt.UsingRabbitMq((ctx, cfg) =>
+    {
         cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ"));
-        cfg.ReceiveEndpoint(RabbitMQSettingsConst.StockReservedEventQueueName, e => 
+        cfg.ReceiveEndpoint(RabbitMQSettingsConst.PaymentStockReservedRequestQueueName, e =>
         {
-            e.ConfigureConsumer<StockReservedEventConsumer>(ctx);
+            e.ConfigureConsumer<StockReservedRequestPaymentConsumer>(ctx);
         });
     });
 });

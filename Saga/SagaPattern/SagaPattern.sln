@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34825.169
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Order.API", "Order.API\Order.API.csproj", "{5B54E7FE-EC13-4F96-8806-0C25CD25C783}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Order.API", "Order.API\Order.API.csproj", "{5B54E7FE-EC13-4F96-8806-0C25CD25C783}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stock.API", "Stock.API\Stock.API.csproj", "{87BDDEF6-E7B1-4B07-A109-546C17C41C2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stock.API", "Stock.API\Stock.API.csproj", "{87BDDEF6-E7B1-4B07-A109-546C17C41C2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Payment.API", "Payment.API\Payment.API.csproj", "{B8EACB77-00B0-4ED4-927A-13E559A0F10B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payment.API", "Payment.API\Payment.API.csproj", "{B8EACB77-00B0-4ED4-927A-13E559A0F10B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedLib", "SharedLib\SharedLib.csproj", "{ED7898F5-2C3F-424B-8D5B-2860DE6F577C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedLib", "SharedLib\SharedLib.csproj", "{ED7898F5-2C3F-424B-8D5B-2860DE6F577C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SagaStateMachineWorkerService", "SagaStateMachineWorkerService\SagaStateMachineWorkerService.csproj", "{C1A18F89-EEAF-47CD-8C3E-23CD0B13F4A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{ED7898F5-2C3F-424B-8D5B-2860DE6F577C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED7898F5-2C3F-424B-8D5B-2860DE6F577C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED7898F5-2C3F-424B-8D5B-2860DE6F577C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1A18F89-EEAF-47CD-8C3E-23CD0B13F4A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1A18F89-EEAF-47CD-8C3E-23CD0B13F4A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1A18F89-EEAF-47CD-8C3E-23CD0B13F4A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1A18F89-EEAF-47CD-8C3E-23CD0B13F4A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
