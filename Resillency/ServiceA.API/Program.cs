@@ -13,7 +13,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient<ProductService>(opt =>
 {
     opt.BaseAddress = new Uri("https://localhost:5001/api/products/");
-}).AddTransientHttpErrorPolicy(_ => ResiliencyStrategies.GetRetryPolicy());
+})
+// .AddTransientHttpErrorPolicy(_ => ResiliencyStrategies.GetRetryPolicy());
+//.AddPolicyHandler(ResiliencyStrategies.GetCircuitBreakerPolicy());
+.AddPolicyHandler(ResiliencyStrategies.GetAdvancedCircuitBreakerPolicy());
 
 
 

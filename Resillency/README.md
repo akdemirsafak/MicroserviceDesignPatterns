@@ -20,6 +20,14 @@ EnableRetryOnFailure() methodu OnConfiguring'da aktifleştirilebilir.
 
 Retry Pattern kısa süre içerisinde up olacağını bildiğimiz servisler için kullanılmalıdır.
 
-
-
 ### Circuit Braker Pattern 
+
+Bazı durumlarda X den Y ye giden istek olduğu senaryoda Y servisinin uzun süre up olmayabilir.Bu senaryoda X servisinin sürekli istek yapmasını engellememiz gerektiği durumda kullanırız.
+
+Belirlenen sürede belirlenen başarısız istek sayısına ulaşılınca istekleri bir Exception ile istek yapan servise döner(Devre açık haldedir.).Belirlenen süre dolduğunda devre yarı açık (Half-Open) durumuna gelir; gelen isteği Y servisine iletmeye çalışır eğer başarılı olursa devreyi kapalı hale getirir ve Y servisine istek yapılabilir hale gelir.
+Bu senaryoda X ve Y servisleri için timer'lar vardır.
+
+Polly kütüphanesi sadece basit bir Circuit Braker kullanabilmemize imkan verir.
+
+### Fallback Pattern
+Bazı senaryolarda Cache'deki datayı dönmek çözüm olabilir.
